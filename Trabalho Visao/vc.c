@@ -106,3 +106,38 @@ int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int sm
 
     return 1;
 }
+int vc_binary_open(IVC* src, IVC* dst, int size) {
+    int ret = 1;
+
+    if (src->width <= 0 || src->height <= 0 || src->data == NULL) return 0;
+    if (src->channels != 1 || dst->channels != 1) return 0;
+
+    IVC* tmp = vc_image_new(src->width, src->height, src->channels, src->levels);
+    if (tmp == NULL) return 0;
+
+    ret &= vc_binary_erosion(src, tmp, size);
+
+    ret &= vc_binary_dilation(tmp, dst, size);
+
+    vc_image_free(tmp);
+
+    return ret;
+}
+
+int vc_binary_close(IVC* src, IVC* dst, int size) {
+    int ret = 1;
+
+    if (src->width <= 0 || src->height <= 0 || src->data == NULL) return 0;
+    if (src->channels != 1 || dst->channels != 1) return 0;
+
+    IVC* tmp = vc_image_new(src->width, src->height, src->channels, src->levels);
+    if (tmp == NULL) return 0;
+
+    ret &= vc_binary_dilation(tmp, dst, size);
+
+    ret &= vc_binary_erosion(src, tmp, size);
+
+    vc_image_free(tmp);
+
+    return ret;
+}
