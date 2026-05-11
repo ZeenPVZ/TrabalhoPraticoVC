@@ -285,3 +285,22 @@ int vc_binary_blob_labelling(IVC *src, IVC *dst, int *nlabels) {
 	*nlabels = label - 1;
     return 1;
 }
+
+//fazer vc_flood_fill para auxiliar na função de rotulagem de blobs
+//fazer vc_image_free para liberar a memória alocada para as imagens
+IVC* vc_image_free(IVC* image)
+{
+    if (image != NULL)
+    {
+        if (image->data != NULL)
+        {
+            free(image->data);
+            image->data = NULL;
+        }
+
+        free(image);
+        image = NULL;
+    }
+
+    return image;
+}
