@@ -106,6 +106,115 @@ int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int sm
 
     return 1;
 }
+
+
+int vc_binary_erosion(IVC* src, IVC* dst, int size) {
+	unsigned char* datasrc = (unsigned char*)src->data;
+	unsigned char* datadst = (unsigned char*)dst->data;
+	int width = src->width;
+	int height = src->height;
+	int bytesperline = src->width * src->channels;
+	int channels = src->channels;
+	int x, y, kx, ky;
+	int offset = size / 2;
+	int is_all_white;
+
+	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
+	if (channels != 1) return 0;
+
+    for ( y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++)
+        {
+            is_all_white = 1;
+        }
+    }
+
+    for (ky = -offset; ky <= offset; ky++) {
+        for (kx = -offset; kx <= offset; kx++)
+        {
+            int ny = y + ky;
+            int nx = x + kx;
+
+            if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
+                long int pos_neighbor = ny * bytesperline + nx * channels;
+                if (datasrc[pos_neighbor] == 0) {
+                    is_all_white = 0;
+                    break;
+                }
+            }
+            else
+            {
+                is_all_white = 0;
+                break;
+            }
+        }
+        if (!is_all_white) {
+            break;
+        }
+
+        long int pos = y * bytesperline + x * channels;
+        if (is_all_white)
+        {
+            datadst[pos] = 255;
+        }
+        else
+        {
+            datadst[pos] = 0;
+        }
+    }
+}
+
+int vc_binary_dilation(IVC* src, IVC* dst, int size) {
+	unsigned char* datasrc = (unsigned char*)src->data;
+	unsigned char* datadst = (unsigned char*)dst->data;
+	int width = src->width;
+	int height = src->height;
+	int bytesperline = src->width * src->channels;
+	int channels = src->channels;
+	int x, y, kx, ky;
+	int offset = size / 2;
+	int has_white;
+
+	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
+    if (channels != 1) return 0;
+        
+        for(y = 0; y < height; y++)
+        {
+            for (x = 0; x < width; x++)
+            {
+                has_white = 0;
+
+
+                for (ky = -offset; ky < offset; ky++)
+                {
+                    int ny = y + ky;
+                    int nx = x + kx;
+                    if (ny >= 0 && ny < height && nx < width) {
+                        long int pos_neighbor = ny * bytesperline + nx * channels;
+
+
+                        if (datasrc[pos_neighbor] == 255) {
+                            has_white = 1;
+                            break;
+                        }
+                    }
+                }
+
+                long int pos = y * bytesperline + x * channels;
+
+                if (has_white)
+                {
+                    datadst[pos] = 255;
+                }
+                else
+                {
+                    datadst[pos] = 0;
+                }
+            }
+        }
+		return 1;
+}
 int vc_binary_open(IVC* src, IVC* dst, int size) {
     int ret = 1;
 
