@@ -15,7 +15,7 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (src->channels != 3 || dst->channels != 3) return 0;
 
-    for (y = 0; x < height; y++) {
+    for (y = 0; y < height; y++) {
         for (x = width; x < width; x++) {
             pos = y * (width * channels) + x * channels;
 
@@ -188,15 +188,18 @@ int vc_binary_dilation(IVC* src, IVC* dst, int size) {
 
                 for (ky = -offset; ky < offset; ky++)
                 {
-                    int ny = y + ky;
-                    int nx = x + kx;
-                    if (ny >= 0 && ny < height && nx < width) {
-                        long int pos_neighbor = ny * bytesperline + nx * channels;
+                    for (kx = -offset; kx < offset; kx++)
+                    {
+                        int ny = y + ky;
+                        int nx = x + kx;
+                        if (ny >= 0 && ny < height && nx < width) {
+                            long int pos_neighbor = ny * bytesperline + nx * channels;
 
 
-                        if (datasrc[pos_neighbor] == 255) {
-                            has_white = 1;
-                            break;
+                            if (datasrc[pos_neighbor] == 255) {
+                                has_white = 1;
+                                break;
+                            }
                         }
                     }
                 }
@@ -249,4 +252,36 @@ int vc_binary_close(IVC* src, IVC* dst, int size) {
     vc_image_free(tmp);
 
     return ret;
+}
+
+int vc_binary_blob_labelling(IVC *src, IVC *dst, int *nlabels) {
+	unsigned char* datasrc = (unsigned char*)src->data;
+	unsigned char* datadst = (unsigned char*)dst->data;
+	int width = src->width;
+	int height = src->height;
+	int bytesperline = src->width * src->channels;
+	int channels = src->channels;
+	int x, y, i;
+	long int pos, pos_neighbor;
+	int label = 1;
+
+	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
+	if (channels != 1||dst->channels!=1) return 0;
+
+    for(i = 0; i < width * height; i++)
+    {
+        datadst[i] = 0;
+	}
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+			pos = y * bytesperline + x * channels;
+
+            if (datasrc[pos] != 0 && datadst[pos] == 0) {
+                _vc_flood_fill(src, dst, x, y, label++);
+            }
+        }
+    }
+
+	*nlabels = label - 1;
+    return 1;
 }
