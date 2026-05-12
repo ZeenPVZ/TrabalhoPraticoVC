@@ -218,6 +218,7 @@ int vc_binary_dilation(IVC* src, IVC* dst, int size) {
         }
 		return 1;
 }
+
 int vc_binary_open(IVC* src, IVC* dst, int size) {
     int ret = 1;
 
@@ -286,8 +287,7 @@ int vc_binary_blob_labelling(IVC *src, IVC *dst, int *nlabels) {
     return 1;
 }
 
-//fazer vc_flood_fill para auxiliar na função de rotulagem de blobs
-void vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
+int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
 	unsigned char* datasrc = (unsigned char*)src->data;
 	unsigned char* datadst = (unsigned char*)dst->data;
 	int width = src->width;
@@ -331,7 +331,29 @@ void vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
 	free(stack_x);
 	free(stack_y);
 }
-//fazer vc_image_free para liberar a memória alocada para as imagens
+
+IVC* vc_image_new(int width, int height, int channels, int levels)
+{
+    IVC* image = (IVC*)malloc(sizeof(IVC));
+
+    if (image == NULL) return NULL;
+    if ((levels <= 0) || (levels > 255)) return NULL;
+
+    image->width = width;
+    image->height = height;
+    image->channels = channels;
+    image->levels = levels;
+    image->bytesperline = image->width * image->channels;
+    image->data = (unsigned char*)malloc(image->width * image->height * image->channels * sizeof(char));
+
+    if (image->data == NULL)
+    {
+        return vc_image_free(image);
+    }
+
+    return image;
+}
+
 IVC* vc_image_free(IVC* image)
 {
     if (image != NULL)
@@ -347,4 +369,61 @@ IVC* vc_image_free(IVC* image)
     }
 
     return image;
+}
+
+int vc_binary_info(IVC* src, IVClob* blobs, int nlabels) {
+	unsigned char* data = (unsigned char*)src->data;
+	int width = src->width;
+	int height = src->height;
+	int x, y, i;
+	long int pos;
+
+	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
+	if (src->channels != 1) return 0;
+
+    for ( i = 0; i < nlabels; i++)
+    {
+		blobs[i].area = width;
+		blobs[i].perimeter = 0;
+		blobs[i].x = width;
+		blobs[i].y = height;
+		blobs[i].width = 0;
+		blobs[i].height = 0;
+    }
+
+    for ( y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++)
+        {
+            pos = y * width + x;
+			int label = (int)data[pos];
+
+            if (label>0 && label <=nlabels)
+            {
+                int idx = label - 1;
+
+				blobs[idx].area++;
+
+                if (x < blobs[idx].x) blobs[idx].x = x;
+				if (y < blobs[idx].y) blobs[idx].y = y;
+                if (x > blobs[idx].width) blobs[idx].width = x;
+				if (y > blobs[idx].height) blobs[idx].height = y;
+
+				int is_boundary = 0;
+                if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
+					is_boundary = 1;
+                }
+                else {
+                    if (data[pos - 1] == 0 || data[pos + 1] == 0 || data[pos - width] == 0 || data[pos + width] == 0) {
+                        is_boundary = 1;
+                    }
+                }
+                if (is_boundary) blobs[idx].perimeter++;
+            }
+        }
+    }
+    for (i = 0; i < nlabels; i++) {
+		blobs[i].width = blobs[i].width - blobs[i].x + 1;
+		blobs[i].height = blobs[i].height - blobs[i].y + 1;
+    }
 }
