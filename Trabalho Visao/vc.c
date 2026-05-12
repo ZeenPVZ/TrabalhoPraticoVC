@@ -201,7 +201,7 @@ int vc_binary_dilation(IVC* src, IVC* dst, int size) {
                 {
                     int ny = y + ky;
                     int nx = x + kx;
-                    if (ny >= 0 && ny < height && nx < width) {
+                    if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
                         long int pos_neighbor = ny * bytesperline + nx * channels;
                         if (datasrc[pos_neighbor] == 255) {
                             has_white = 1;
@@ -254,12 +254,27 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
     int width = src->width;
     int height = src->height;
     int channels = src->channels;
-    int* stack_x = (int*)malloc(sizeof(int) * width * height);
-    int* stack_y = (int*)malloc(sizeof(int) * width * height);
+    int* stack_x = NULL;
+    int* stack_y = NULL;
     int stack_ptr = 0;
+
+    // Verificação de ponteiros nulos antes de alocar memória
+    if (src == NULL || dst == NULL || datasrc == NULL || datadst == NULL)
+        return 0;
+
+    stack_x = (int*)malloc(sizeof(int) * width * height);
+    stack_y = (int*)malloc(sizeof(int) * width * height);
+
+    if (stack_x == NULL || stack_y == NULL) {
+        free(stack_x);
+        free(stack_y);
+        return 0;
+    }
+
     stack_x[stack_ptr] = x;
     stack_y[stack_ptr] = y;
     stack_ptr++;
+
     while (stack_ptr > 0)
     {
         stack_ptr--;
@@ -267,7 +282,7 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
         int cy = stack_y[stack_ptr];
         long int pos = cy * width * channels + cx * channels;
         if (datasrc[pos] == 255 && datadst[pos] == 0) {
-            datadst[pos] == (unsigned char)label;
+            datadst[pos] = (unsigned char)label; 
             int dx[] = { -1, 0, 1, 0 };
             int dy[] = { 0, -1, 0, 1 };
             for (int i = 0; i < 4; i++)
@@ -284,6 +299,7 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
     }
     free(stack_x);
     free(stack_y);
+    return 1;
 }
 
 int vc_binary_blob_labelling(IVC* src, IVC* dst, int* nlabels) {
@@ -294,7 +310,7 @@ int vc_binary_blob_labelling(IVC* src, IVC* dst, int* nlabels) {
     int bytesperline = src->width * src->channels;
     int channels = src->channels;
     int x, y, i;
-    long int pos, pos_neighbor;
+    long int pos, pos_neighbor = 0;
     int label = 1;
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (channels != 1 || dst->channels != 1) return 0;
@@ -314,7 +330,7 @@ int vc_binary_blob_labelling(IVC* src, IVC* dst, int* nlabels) {
     return 1;
 }
 
-int vc_binary_info(IVC* src, IVClob* blobs, int nlabels) {
+int vc_binary_blob_info(IVC* src, IVCBlob* blobs, int nlabels) {
     unsigned char* data = (unsigned char*)src->data;
     int width = src->width;
     int height = src->height;

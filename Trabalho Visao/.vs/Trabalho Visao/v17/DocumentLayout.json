@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{754708E8-6063-425E-9468-C54E003127A2}|Trabalho Visao.vcxproj|solutionrelative:vc.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{754708E8-6063-425E-9468-C54E003127A2}|Trabalho Visao.vcxproj|C:\\Users\\Afonso\\OneDrive - Instituto Polit\u00E9cnico do C\u00E1vado e do Ave\\Desktop\\TrabalhoPraticoVC\\Trabalho Visao\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{754708E8-6063-425E-9468-C54E003127A2}|Trabalho Visao.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{754708E8-6063-425E-9468-C54E003127A2}|Trabalho Visao.vcxproj|C:\\Users\\Afonso\\OneDrive - Instituto Polit\u00E9cnico do C\u00E1vado e do Ave\\Desktop\\TrabalhoPraticoVC\\Trabalho Visao\\vc.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{754708E8-6063-425E-9468-C54E003127A2}|Trabalho Visao.vcxproj|solutionrelative:vc.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{754708E8-6063-425E-9468-C54E003127A2}|Trabalho Visao.vcxproj|C:\\Users\\Afonso\\OneDrive - Instituto Polit\u00E9cnico do C\u00E1vado e do Ave\\Desktop\\TrabalhoPraticoVC\\Trabalho Visao\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{754708E8-6063-425E-9468-C54E003127A2}|Trabalho Visao.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,13 +38,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "vc.h",
               "DocumentMoniker": "C:\\Users\\Afonso\\OneDrive - Instituto Polit\u00E9cnico do C\u00E1vado e do Ave\\Desktop\\TrabalhoPraticoVC\\Trabalho Visao\\vc.h",
               "RelativeDocumentMoniker": "vc.h",
               "ToolTip": "C:\\Users\\Afonso\\OneDrive - Instituto Polit\u00E9cnico do C\u00E1vado e do Ave\\Desktop\\TrabalhoPraticoVC\\Trabalho Visao\\vc.h",
               "RelativeToolTip": "vc.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2026-05-11T20:59:55.196Z",
               "EditorCaption": ""
@@ -57,14 +57,14 @@
               "RelativeDocumentMoniker": "vc.c",
               "ToolTip": "C:\\Users\\Afonso\\OneDrive - Instituto Polit\u00E9cnico do C\u00E1vado e do Ave\\Desktop\\TrabalhoPraticoVC\\Trabalho Visao\\vc.c",
               "RelativeToolTip": "vc.c",
-              "ViewState": "AgIAALEAAAAAAAAAAAAgwGIBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACkBAAAAAAAAAAAgwDABAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
               "WhenOpened": "2026-05-11T20:59:35.606Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "main.cpp",
               "DocumentMoniker": "C:\\Users\\Afonso\\OneDrive - Instituto Polit\u00E9cnico do C\u00E1vado e do Ave\\Desktop\\TrabalhoPraticoVC\\Trabalho Visao\\main.cpp",
               "RelativeDocumentMoniker": "main.cpp",
