@@ -84,7 +84,7 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
             }
             datadst[pos] = (unsigned char)(hue / 360.0f * 255.0f);
             datadst[pos + 1] = (unsigned char)(sat * 255.0f);
-            datadst[pos + 3] = (unsigned char)val;
+            datadst[pos + 2] = (unsigned char)val;
         }
     }
     return 1;
@@ -160,7 +160,6 @@ int vc_binary_erosion(IVC* src, IVC* dst, int size) {
             else
             {
                 is_all_white = 0;
-                break;
             }
         }
         if (!is_all_white) {
@@ -176,6 +175,7 @@ int vc_binary_erosion(IVC* src, IVC* dst, int size) {
             datadst[pos] = 0;
         }
     }
+    return 1;
 }
 
 int vc_binary_dilation(IVC* src, IVC* dst, int size) {
@@ -331,6 +331,7 @@ int vc_binary_blob_labelling(IVC* src, IVC* dst, int* nlabels) {
 }
 
 int vc_binary_blob_info(IVC* src, IVCBlob* blobs, int nlabels) {
+
     unsigned char* data = (unsigned char*)src->data;
     int width = src->width;
     int height = src->height;
@@ -340,7 +341,7 @@ int vc_binary_blob_info(IVC* src, IVCBlob* blobs, int nlabels) {
     if (src->channels != 1) return 0;
     for (i = 0; i < nlabels; i++)
     {
-        blobs[i].area = width;
+        blobs[i].area = 0;
         blobs[i].perimeter = 0;
         blobs[i].x = width;
         blobs[i].y = height;
@@ -378,4 +379,5 @@ int vc_binary_blob_info(IVC* src, IVCBlob* blobs, int nlabels) {
         blobs[i].width = blobs[i].width - blobs[i].x + 1;
         blobs[i].height = blobs[i].height - blobs[i].y + 1;
     }
+	return 1;
 }

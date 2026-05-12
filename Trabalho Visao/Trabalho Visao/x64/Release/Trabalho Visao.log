@@ -1,2 +1,1 @@
-﻿  vc.c
-LINK : fatal error LNK1104: não é possível abrir o arquivo 'msvcprt.lib'
+﻿LINK : fatal error LNK1104: não é possível abrir o arquivo 'msvcprt.lib'
