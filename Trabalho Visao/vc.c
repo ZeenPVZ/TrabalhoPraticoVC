@@ -287,6 +287,50 @@ int vc_binary_blob_labelling(IVC *src, IVC *dst, int *nlabels) {
 }
 
 //fazer vc_flood_fill para auxiliar na função de rotulagem de blobs
+void vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
+	unsigned char* datasrc = (unsigned char*)src->data;
+	unsigned char* datadst = (unsigned char*)dst->data;
+	int width = src->width;
+	int height = src->height;
+	int channels = src->channels;
+
+	int *stack_x = (int*)malloc(sizeof(int) * width * height);
+	int* stack_y = (int*)malloc(sizeof(int) * width * height);
+	int stack_ptr = 0;
+
+    stack_x[stack_ptr] = x;
+	stack_y[stack_ptr] = y;
+	stack_ptr++;
+
+    while (stack_ptr>0)
+    {
+        stack_ptr--;
+		int cx = stack_x[stack_ptr];
+		int cy = stack_y[stack_ptr];
+
+		long int pos = cy * width * channels + cx * channels;
+
+        if (datasrc[pos] == 255 && datadst[pos] == 0) {
+            datadst[pos] == (unsigned char)label;
+
+			int dx[] = { -1, 0, 1, 0 };
+            int dy[] = { 0, -1, 0, 1 };
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    stack_x[stack_ptr] = nx;
+                    stack_y[stack_ptr] = ny;
+                    stack_ptr++;
+                }
+            }
+        }
+    }
+	free(stack_x);
+	free(stack_y);
+}
 //fazer vc_image_free para liberar a memória alocada para as imagens
 IVC* vc_image_free(IVC* image)
 {
