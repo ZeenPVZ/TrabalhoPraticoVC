@@ -1,0 +1,4 @@
+﻿  vc.c
+C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\vc.c(261,26): warning C4553: '==': o resultado da expressão não usado; você pretendia que fosse '='?
+C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\vc.c(287,19): warning C4101: 'pos_neighbor': variável local não referenciada
+LINK : fatal error LNK1104: não é possível abrir o arquivo 'msvcprt.lib'
