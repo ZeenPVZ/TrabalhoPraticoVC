@@ -16,6 +16,9 @@ typedef struct {
     float xc, yc;       // Centro de massa [cite: 469]
 } IVCBlob;
 
+IVC* vc_image_free(IVC* image);
+IVC* vc_image_new(int width, int height, int channels, int levels);
+
 int vc_rgb_to_hsv(IVC* src, IVC* dst);
 int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int smax, int vmin, int vmax);
 int vc_binary_erosion(IVC* src, IVC* dst, int size);
