@@ -35,7 +35,7 @@ int main() {
 		IVC* imgHSV = vc_image_new(frame.cols, frame.rows, 3, 255);
 		vc_rgb_to_hsv(imgRGB, imgHSV);
 
-		vc_hsv_segmentation(imgHSV, imgBin, 20, 40, 50, 100, 50, 255);
+		vc_hsv_segmentation(imgHSV, imgBin, 15, 30, 50, 100, 40, 100);
 
 		vc_binary_close(imgBin, imgBin, 7);
 		vc_binary_open(imgBin, imgBin, 5);

@@ -115,7 +115,7 @@ int main(void) {
         // Laranjas: H=[5,30] S=[40,100] V=[40,100]
         // ============================================================
         vc_rgb_to_hsv(src_rgb, src_hsv);
-        vc_hsv_segmentation(src_hsv, bin, 5, 30, 40, 100, 40, 100);
+        vc_hsv_segmentation(src_hsv, bin, 15, 30, 50, 100, 40, 100);
 
         // ============================================================
         // 3. MORFOLOGIA: remover ruido e fechar buracos
@@ -141,7 +141,7 @@ int main(void) {
 
                 for (int i = 0; i < nlabels; i++) {
                     // Filtrar blobs pequenos (ruido)
-                    if (blobs[i].area < 500) continue;
+                    if (blobs[i].area < 35000) continue;
 
                     laranjas_frame++;
 
@@ -188,28 +188,28 @@ int main(void) {
                     char buf[256];
 
                     // Linha 1: Label, Area, Perimetro
-                    sprintf(buf, "L:%d A:%d P:%d", i + 1, blobs[i].area, blobs[i].perimeter);
+                    sprintf(buf, "LABEL:%d AREA:%d PERIMETRO:%d", i + 1, blobs[i].area, blobs[i].perimeter);
                     cv::putText(frame, buf, cv::Point(tx, ty - 45),
                         cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(0, 0, 0), 2);
                     cv::putText(frame, buf, cv::Point(tx, ty - 45),
                         cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(255, 255, 255), 1);
 
                     // Linha 2: Calibre e Diametro
-                    sprintf(buf, "CAL:%d DIAM:%.0fmm", calibre, diam_mm);
+                    sprintf(buf, "CALIBRE:%d DIAMETRO:%.0fmm", calibre, diam_mm);
                     cv::putText(frame, buf, cv::Point(tx, ty - 30),
                         cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(0, 0, 0), 2);
                     cv::putText(frame, buf, cv::Point(tx, ty - 30),
                         cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(255, 255, 255), 1);
 
                     // Linha 3: Deformacao e Categoria
-                    sprintf(buf, "DEF:%.1f%% CAT:%s", deformacao, categoria);
+                    sprintf(buf, "DEFORMACAO:%.1f%% CATEGORIA:%s", deformacao, categoria);
                     cv::putText(frame, buf, cv::Point(tx, ty - 15),
                         cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(0, 0, 0), 2);
                     cv::putText(frame, buf, cv::Point(tx, ty - 15),
                         cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(255, 255, 255), 1);
 
                     // Linha 4: Aprovado
-                    sprintf(buf, "APROV:%s", aprovado ? "SIM" : "NAO");
+                    sprintf(buf, "APROVADO:%s", aprovado ? "SIM" : "NAO");
                     cv::putText(frame, buf, cv::Point(tx, ty),
                         cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(0, 0, 0), 2);
                     cv::putText(frame, buf, cv::Point(tx, ty),

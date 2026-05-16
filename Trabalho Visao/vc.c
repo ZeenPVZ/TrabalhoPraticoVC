@@ -117,7 +117,10 @@ int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int sm
             h = ((float)datasrc[pos_src] / 255.0f) * 360.0f;
             s = ((float)datasrc[pos_src + 1] / 255.0f) * 100.0f;
             v = ((float)datasrc[pos_src + 2] / 255.0f) * 100.0f;
-            if (h >= hmin && h <= hmax && s >= smin && s <= smax && v >= vmin && v <= vmax)
+            int is_orange = (h >= hmin && h <= hmax && s >= smin && s <= smax && v >= vmin && v <= vmax);
+            int is_red = (h < 10);  // vermelho puro — exclui maçãs vermelhas
+
+            if (is_orange && !is_red)
             {
                 datadst[pos_dst] = 255;
             }

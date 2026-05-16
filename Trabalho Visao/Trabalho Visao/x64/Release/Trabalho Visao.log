@@ -1,9 +1,9 @@
 ﻿  main.cpp
 C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(160,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
 C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(162,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-  vc.c
   Gerando código
-  Previous IPDB not found, fall back to full compilation.
-  All 146 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  1 of 146 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   Trabalho Visao.vcxproj -> C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\x64\Release\Trabalho Visao.exe
