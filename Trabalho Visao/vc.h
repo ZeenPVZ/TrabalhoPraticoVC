@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Estrutura de Imagem [cite: 148, 160]
 typedef struct {
     unsigned char* data;
@@ -29,4 +33,7 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label);
 int vc_binary_blob_labelling(IVC* src, IVC* dst, int* nlabels);
 int vc_binary_blob_info(IVC* src, IVCBlob* blobs, int nlabels);
 
+#ifdef __cplusplus
+}
+#endif
 

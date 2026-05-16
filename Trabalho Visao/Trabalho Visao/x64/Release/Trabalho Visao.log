@@ -1,5 +1,9 @@
 ﻿  main.cpp
-C:\Users\forte\Documents\IPCA UNI\3ºANO\Visão\TrabalhoPraticoVC\Trabalho Visao\main.cpp(160,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-C:\Users\forte\Documents\IPCA UNI\3ºANO\Visão\TrabalhoPraticoVC\Trabalho Visao\main.cpp(162,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(160,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(162,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
   vc.c
-LINK : fatal error LNK1104: não é possível abrir o arquivo 'msvcprt.lib'
+  Gerando código
+  Previous IPDB not found, fall back to full compilation.
+  All 146 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finalizada a geração de código
+  Trabalho Visao.vcxproj -> C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\x64\Release\Trabalho Visao.exe
