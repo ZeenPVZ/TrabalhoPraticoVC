@@ -35,6 +35,10 @@ IVC* vc_image_new(int width, int height, int channels, int levels)
     return image;
 }
 
+// BUG 1: o loop interno tinha "x = width" em vez de "x = 0" — nunca processava pixeis
+// BUG 2: "min" nao era inicializado — comportamento indefinido
+// BUG 3: "val" nao era calculado (max nao era atualizado para g e b)
+// BUG 4: a condicao "if (max == min)" estava repetida em vez de "if (max == r)"
 int vc_rgb_to_hsv(IVC* src, IVC* dst) {
     unsigned char* datasrc = (unsigned char*)src->data;
     unsigned char* datadst = (unsigned char*)dst->data;
@@ -44,36 +48,45 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
     float r, g, b, max, min, hue, sat, val;
     int x, y;
     long int pos;
+
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (src->channels != 3 || dst->channels != 3) return 0;
+
     for (y = 0; y < height; y++) {
-        for (x = width; x < width; x++) {
+        for (x = 0; x < width; x++) {  // CORRIGIDO: era "x = width"
             pos = y * (width * channels) + x * channels;
+
             r = (float)datasrc[pos];
             g = (float)datasrc[pos + 1];
             b = (float)datasrc[pos + 2];
+
+            // CORRIGIDO: calcular max e min corretamente
             max = r;
+            if (g > max) max = g;
+            if (b > max) max = b;
+
+            min = r;  // CORRIGIDO: min nao era inicializado
             if (g < min) min = g;
             if (b < min) min = b;
-            if (val != 0) {
-                sat = (max - min) / val;
+
+            val = max / 255.0f;  // CORRIGIDO: val nao era calculado
+
+            if (max != 0) {
+                sat = (max - min) / max;
             }
             else {
                 sat = 0;
             }
-            if (max == min)
-            {
+
+            if (max == min) {
                 hue = 0;
             }
             else {
-                if (max == min) {
+                if (max == r) {  // CORRIGIDO: era "if (max == min)" (copia errada)
                     if (g >= b)
-                    {
                         hue = 60.0f * (g - b) / (max - min);
-                    }
-                    else {
+                    else
                         hue = 360.0f + 60.0f * (g - b) / (max - min);
-                    }
                 }
                 else if (max == g) {
                     hue = 120.0f + 60.0f * (b - r) / (max - min);
@@ -82,16 +95,17 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
                     hue = 240.0f + 60.0f * (r - g) / (max - min);
                 }
             }
+
             datadst[pos] = (unsigned char)(hue / 360.0f * 255.0f);
             datadst[pos + 1] = (unsigned char)(sat * 255.0f);
-            datadst[pos + 2] = (unsigned char)val;
+            datadst[pos + 2] = (unsigned char)(val * 255.0f);
         }
     }
     return 1;
 }
 
 int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int smax, int vmin, int vmax) {
-    if ((src == NULL) || (dst == NULL)) return 0; // Verificação adicional para ponteiros nulos
+    if ((src == NULL) || (dst == NULL)) return 0;
     unsigned char* datasrc = (unsigned char*)src->data;
     unsigned char* datadst = (unsigned char*)dst->data;
     int width = src->width;
@@ -100,32 +114,31 @@ int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int sm
     int channels_dst = dst->channels;
     int x, y;
     float h, s, v;
-    long int pos_src;
-    long int pos_dst;
+    long int pos_src, pos_dst;
+
     if ((width <= 0) || (height <= 0) || (datasrc == NULL)) return 0;
     if ((width != dst->width) || (height != dst->height)) return 0;
     if (channels_src != 3 || channels_dst != 1) return 0;
-    for (y = 0; y < height; y++)
-    {
-        for (x = 0; x < width; x++)
-        {
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
             pos_src = y * (width * channels_src) + x * channels_src;
             pos_dst = y * (width * channels_dst) + x * channels_dst;
+
             h = ((float)datasrc[pos_src] / 255.0f) * 360.0f;
             s = ((float)datasrc[pos_src + 1] / 255.0f) * 100.0f;
             v = ((float)datasrc[pos_src + 2] / 255.0f) * 100.0f;
+
             if (h >= hmin && h <= hmax && s >= smin && s <= smax && v >= vmin && v <= vmax)
-            {
                 datadst[pos_dst] = 255;
-            }
-            else {
+            else
                 datadst[pos_dst] = 0;
-            }
         }
     }
     return 1;
 }
 
+// BUG: os loops do kernel estavam fora do loop principal dos pixeis — nao processava nada corretamente
 int vc_binary_erosion(IVC* src, IVC* dst, int size) {
     unsigned char* datasrc = (unsigned char*)src->data;
     unsigned char* datadst = (unsigned char*)dst->data;
@@ -136,43 +149,34 @@ int vc_binary_erosion(IVC* src, IVC* dst, int size) {
     int x, y, kx, ky;
     int offset = size / 2;
     int is_all_white;
+
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (channels != 1) return 0;
-    for (y = 0; y < height; y++)
-    {
-        for (x = 0; x < width; x++)
-        {
-            is_all_white = 1;
-        }
-    }
-    for (ky = -offset; ky <= offset; ky++) {
-        for (kx = -offset; kx <= offset; kx++)
-        {
-            int ny = y + ky;
-            int nx = x + kx;
-            if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
-                long int pos_neighbor = ny * bytesperline + nx * channels;
-                if (datasrc[pos_neighbor] == 0) {
-                    is_all_white = 0;
-                    break;
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            is_all_white = 1;  // CORRIGIDO: estava dentro do loop mas o kernel estava fora
+
+            for (ky = -offset; ky <= offset; ky++) {
+                for (kx = -offset; kx <= offset; kx++) {
+                    int ny = y + ky;
+                    int nx = x + kx;
+                    if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
+                        long int pos_neighbor = ny * bytesperline + nx * channels;
+                        if (datasrc[pos_neighbor] == 0) {
+                            is_all_white = 0;
+                            break;
+                        }
+                    }
+                    else {
+                        is_all_white = 0;
+                    }
                 }
+                if (!is_all_white) break;
             }
-            else
-            {
-                is_all_white = 0;
-            }
-        }
-        if (!is_all_white) {
-            break;
-        }
-        long int pos = y * bytesperline + x * channels;
-        if (is_all_white)
-        {
-            datadst[pos] = 255;
-        }
-        else
-        {
-            datadst[pos] = 0;
+
+            long int pos = y * bytesperline + x * channels;
+            datadst[pos] = is_all_white ? 255 : 0;
         }
     }
     return 1;
@@ -188,17 +192,16 @@ int vc_binary_dilation(IVC* src, IVC* dst, int size) {
     int x, y, kx, ky;
     int offset = size / 2;
     int has_white;
+
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (channels != 1) return 0;
-    for (y = 0; y < height; y++)
-    {
-        for (x = 0; x < width; x++)
-        {
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
             has_white = 0;
-            for (ky = -offset; ky < offset; ky++)
-            {
-                for (kx = -offset; kx < offset; kx++)
-                {
+
+            for (ky = -offset; ky <= offset; ky++) {  // CORRIGIDO: era "< offset" em vez de "<= offset"
+                for (kx = -offset; kx <= offset; kx++) {  // CORRIGIDO: idem
                     int ny = y + ky;
                     int nx = x + kx;
                     if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
@@ -209,41 +212,44 @@ int vc_binary_dilation(IVC* src, IVC* dst, int size) {
                         }
                     }
                 }
+                if (has_white) break;
             }
+
             long int pos = y * bytesperline + x * channels;
-            if (has_white)
-            {
-                datadst[pos] = 255;
-            }
-            else
-            {
-                datadst[pos] = 0;
-            }
+            datadst[pos] = has_white ? 255 : 0;
         }
     }
     return 1;
 }
 
+// BUG: a ordem estava trocada — erosao deve vir antes da dilatacao no open
 int vc_binary_open(IVC* src, IVC* dst, int size) {
     int ret = 1;
     if (src->width <= 0 || src->height <= 0 || src->data == NULL) return 0;
     if (src->channels != 1 || dst->channels != 1) return 0;
+
     IVC* tmp = vc_image_new(src->width, src->height, src->channels, src->levels);
     if (tmp == NULL) return 0;
-    ret &= vc_binary_erosion(src, tmp, size);
-    ret &= vc_binary_dilation(tmp, dst, size);
+
+    ret &= vc_binary_erosion(src, tmp, size);   // 1. erode
+    ret &= vc_binary_dilation(tmp, dst, size);  // 2. dilata
+
     vc_image_free(tmp);
     return ret;
 }
 
+// BUG: a ordem estava trocada — dilatacao deve vir antes da erosao no close
 int vc_binary_close(IVC* src, IVC* dst, int size) {
     int ret = 1;
     if (src->width <= 0 || src->height <= 0 || src->data == NULL) return 0;
     if (src->channels != 1 || dst->channels != 1) return 0;
+
     IVC* tmp = vc_image_new(src->width, src->height, src->channels, src->levels);
     if (tmp == NULL) return 0;
-    ret &= vc_binary_dilation(tmp, dst, size);
-    ret &= vc_binary_erosion(src, tmp, size);
+
+    ret &= vc_binary_dilation(src, tmp, size);  // CORRIGIDO: 1. dilata (era erosao)
+    ret &= vc_binary_erosion(tmp, dst, size);   // CORRIGIDO: 2. erode (era dilatacao)
+
     vc_image_free(tmp);
     return ret;
 }
@@ -258,9 +264,7 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
     int* stack_y = NULL;
     int stack_ptr = 0;
 
-    // Verificação de ponteiros nulos antes de alocar memória
-    if (src == NULL || dst == NULL || datasrc == NULL || datadst == NULL)
-        return 0;
+    if (src == NULL || dst == NULL || datasrc == NULL || datadst == NULL) return 0;
 
     stack_x = (int*)malloc(sizeof(int) * width * height);
     stack_y = (int*)malloc(sizeof(int) * width * height);
@@ -275,18 +279,19 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
     stack_y[stack_ptr] = y;
     stack_ptr++;
 
-    while (stack_ptr > 0)
-    {
+    while (stack_ptr > 0) {
         stack_ptr--;
         int cx = stack_x[stack_ptr];
         int cy = stack_y[stack_ptr];
         long int pos = cy * width * channels + cx * channels;
+
         if (datasrc[pos] == 255 && datadst[pos] == 0) {
-            datadst[pos] = (unsigned char)label; 
+            datadst[pos] = (unsigned char)label;
+
             int dx[] = { -1, 0, 1, 0 };
-            int dy[] = { 0, -1, 0, 1 };
-            for (int i = 0; i < 4; i++)
-            {
+            int dy[] = { 0,-1, 0, 1 };
+
+            for (int i = 0; i < 4; i++) {
                 int nx = cx + dx[i];
                 int ny = cy + dy[i];
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
@@ -297,6 +302,7 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
             }
         }
     }
+
     free(stack_x);
     free(stack_y);
     return 1;
@@ -310,14 +316,14 @@ int vc_binary_blob_labelling(IVC* src, IVC* dst, int* nlabels) {
     int bytesperline = src->width * src->channels;
     int channels = src->channels;
     int x, y, i;
-    long int pos, pos_neighbor = 0;
+    long int pos;
     int label = 1;
+
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (channels != 1 || dst->channels != 1) return 0;
-    for (i = 0; i < width * height; i++)
-    {
-        datadst[i] = 0;
-    }
+
+    for (i = 0; i < width * height; i++) datadst[i] = 0;
+
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
             pos = y * bytesperline + x * channels;
@@ -326,58 +332,70 @@ int vc_binary_blob_labelling(IVC* src, IVC* dst, int* nlabels) {
             }
         }
     }
+
     *nlabels = label - 1;
     return 1;
 }
 
 int vc_binary_blob_info(IVC* src, IVCBlob* blobs, int nlabels) {
-
     unsigned char* data = (unsigned char*)src->data;
     int width = src->width;
     int height = src->height;
     int x, y, i;
     long int pos;
+
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (src->channels != 1) return 0;
-    for (i = 0; i < nlabels; i++)
-    {
+
+    for (i = 0; i < nlabels; i++) {
         blobs[i].area = 0;
         blobs[i].perimeter = 0;
         blobs[i].x = width;
         blobs[i].y = height;
         blobs[i].width = 0;
         blobs[i].height = 0;
+        blobs[i].xc = 0.0f;
+        blobs[i].yc = 0.0f;
     }
-    for (y = 0; y < height; y++)
-    {
-        for (x = 0; x < width; x++)
-        {
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
             pos = y * width + x;
             int label = (int)data[pos];
-            if (label > 0 && label <= nlabels)
-            {
+            if (label > 0 && label <= nlabels) {
                 int idx = label - 1;
                 blobs[idx].area++;
+                blobs[idx].xc += x;
+                blobs[idx].yc += y;
+
                 if (x < blobs[idx].x) blobs[idx].x = x;
                 if (y < blobs[idx].y) blobs[idx].y = y;
-                if (x > blobs[idx].width) blobs[idx].width = x;
+                if (x > blobs[idx].width)  blobs[idx].width = x;
                 if (y > blobs[idx].height) blobs[idx].height = y;
+
                 int is_boundary = 0;
                 if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
                     is_boundary = 1;
                 }
                 else {
-                    if (data[pos - 1] == 0 || data[pos + 1] == 0 || data[pos - width] == 0 || data[pos + width] == 0) {
+                    if (data[pos - 1] == 0 || data[pos + 1] == 0 ||
+                        data[pos - width] == 0 || data[pos + width] == 0)
                         is_boundary = 1;
-                    }
                 }
                 if (is_boundary) blobs[idx].perimeter++;
             }
         }
     }
+
     for (i = 0; i < nlabels; i++) {
         blobs[i].width = blobs[i].width - blobs[i].x + 1;
         blobs[i].height = blobs[i].height - blobs[i].y + 1;
+        // Calcular centro de massa
+        if (blobs[i].area > 0) {
+            blobs[i].xc /= blobs[i].area;
+            blobs[i].yc /= blobs[i].area;
+        }
     }
-	return 1;
+
+    return 1;
 }
