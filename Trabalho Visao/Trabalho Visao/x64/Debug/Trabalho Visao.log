@@ -1,0 +1,2 @@
+﻿  main.cpp
+C:\Users\forte\Documents\IPCA UNI\3ºANO\Visão\TrabalhoPraticoVC\Trabalho Visao\main.cpp(2,10): error C1083: Não é possível abrir arquivo incluir: 'opencv2/opencv.hpp': No such file or directory
