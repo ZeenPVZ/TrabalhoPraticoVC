@@ -44,36 +44,37 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
     float r, g, b, max, min, hue, sat, val;
     int x, y;
     long int pos;
+
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
     if (src->channels != 3 || dst->channels != 3) return 0;
+
     for (y = 0; y < height; y++) {
-        for (x = width; x < width; x++) {
+        for (x = 0; x < width; x++) { // CORRIGIDO: x = 0
             pos = y * (width * channels) + x * channels;
+
             r = (float)datasrc[pos];
             g = (float)datasrc[pos + 1];
             b = (float)datasrc[pos + 2];
-            max = r;
-            if (g < min) min = g;
-            if (b < min) min = b;
+
+            // Determinar Max e Min
+            max = r; if (g > max) max = g; if (b > max) max = b;
+            min = r; if (g < min) min = g; if (b < min) min = b;
+
+            val = max; // Valor (V)
+
             if (val != 0) {
-                sat = (max - min) / val;
+                sat = (max - min) / val; // Saturação (S)
             }
             else {
                 sat = 0;
             }
-            if (max == min)
-            {
-                hue = 0;
+
+            if (max == min) {
+                hue = 0; // Tom (H)
             }
             else {
-                if (max == min) {
-                    if (g >= b)
-                    {
-                        hue = 60.0f * (g - b) / (max - min);
-                    }
-                    else {
-                        hue = 360.0f + 60.0f * (g - b) / (max - min);
-                    }
+                if (max == r) {
+                    hue = 60.0f * (g - b) / (max - min);
                 }
                 else if (max == g) {
                     hue = 120.0f + 60.0f * (b - r) / (max - min);
@@ -81,7 +82,9 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
                 else {
                     hue = 240.0f + 60.0f * (r - g) / (max - min);
                 }
+                if (hue < 0) hue += 360.0f;
             }
+
             datadst[pos] = (unsigned char)(hue / 360.0f * 255.0f);
             datadst[pos + 1] = (unsigned char)(sat * 255.0f);
             datadst[pos + 2] = (unsigned char)val;
@@ -242,8 +245,8 @@ int vc_binary_close(IVC* src, IVC* dst, int size) {
     if (src->channels != 1 || dst->channels != 1) return 0;
     IVC* tmp = vc_image_new(src->width, src->height, src->channels, src->levels);
     if (tmp == NULL) return 0;
-    ret &= vc_binary_dilation(tmp, dst, size);
-    ret &= vc_binary_erosion(src, tmp, size);
+    ret &= vc_binary_dilation(src, tmp, size);
+    ret &= vc_binary_erosion(tmp, dst, size);
     vc_image_free(tmp);
     return ret;
 }

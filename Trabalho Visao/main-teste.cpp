@@ -59,6 +59,7 @@ int main() {
 			std::string info="Diametro: " + std::to_string(diametro) + " cm";
 			cv::putText(frame, info, cv::Point(blobs[i].x, blobs[i].y - 5), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
 
+			IVC* imgLabel = vc_image_new(frame.cols, frame.rows, 1, 255);
 		}
 
 		cv::imshow("Laranjas", frame);
