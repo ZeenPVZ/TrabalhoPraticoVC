@@ -1,6 +1,8 @@
 ﻿  main.cpp
+  vc.c
   Gerando código
-  Previous IPDB not found, fall back to full compilation.
-  All 117 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  0 of 117 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   Trabalho Visao.vcxproj -> C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\x64\Release\Trabalho Visao.exe
