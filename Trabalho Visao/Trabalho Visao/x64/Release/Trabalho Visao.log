@@ -1,6 +1,6 @@
 ﻿  main.cpp
-C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(160,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(162,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(143,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+C:\Users\Afonso\OneDrive - Instituto Politécnico do Cávado e do Ave\Desktop\TrabalhoPraticoVC\Trabalho Visao\main.cpp(145,33): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
   Gerando código
   1 of 146 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation

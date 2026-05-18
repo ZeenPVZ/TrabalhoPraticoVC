@@ -2,7 +2,7 @@
 extern "C" {
 #endif
 
-// Estrutura de Imagem [cite: 148, 160]
+
 typedef struct {
     unsigned char* data;
     int width, height;
@@ -11,13 +11,13 @@ typedef struct {
     int bytesperline;
 } IVC;
 
-// Estrutura de Informação de Objetos 
+
 typedef struct {
-    int x, y;           // Posição superior esquerda (Bounding Box) [cite: 469]
-    int width, height;  // Dimensões da Bounding Box [cite: 469]
-    int area;           // Número de pixéis do objeto 
-    int perimeter;      // Número de pixéis de contorno [cite: 469]
-    float xc, yc;       // Centro de massa [cite: 469]
+    int x, y;           
+    int width, height;  
+    int area;           
+    int perimeter;      
+    float xc, yc;       
 } IVCBlob;
 
 IVC* vc_image_free(IVC* image);

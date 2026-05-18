@@ -49,28 +49,28 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
     if (src->channels != 3 || dst->channels != 3) return 0;
 
     for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) { // CORRIGIDO: x = 0
+        for (x = 0; x < width; x++) {
             pos = y * (width * channels) + x * channels;
 
             r = (float)datasrc[pos];
             g = (float)datasrc[pos + 1];
             b = (float)datasrc[pos + 2];
 
-            // Determinar Max e Min
+            
             max = r; if (g > max) max = g; if (b > max) max = b;
             min = r; if (g < min) min = g; if (b < min) min = b;
 
-            val = max; // Valor (V)
+            val = max; 
 
             if (val != 0) {
-                sat = (max - min) / val; // Saturação (S)
+                sat = (max - min) / val; 
             }
             else {
                 sat = 0;
             }
 
             if (max == min) {
-                hue = 0; // Tom (H)
+                hue = 0;
             }
             else {
                 if (max == r) {
@@ -94,7 +94,7 @@ int vc_rgb_to_hsv(IVC* src, IVC* dst) {
 }
 
 int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int smax, int vmin, int vmax) {
-    if ((src == NULL) || (dst == NULL)) return 0; // Verificação adicional para ponteiros nulos
+    if ((src == NULL) || (dst == NULL)) return 0; 
     unsigned char* datasrc = (unsigned char*)src->data;
     unsigned char* datadst = (unsigned char*)dst->data;
     int width = src->width;
@@ -118,7 +118,7 @@ int vc_hsv_segmentation(IVC* src, IVC* dst, int hmin, int hmax, int smin, int sm
             s = ((float)datasrc[pos_src + 1] / 255.0f) * 100.0f;
             v = ((float)datasrc[pos_src + 2] / 255.0f) * 100.0f;
             int is_orange = (h >= hmin && h <= hmax && s >= smin && s <= smax && v >= vmin && v <= vmax);
-            int is_red = (h < 10);  // vermelho puro — exclui maçãs vermelhas
+            int is_red = (h < 10);  
 
             if (is_orange && !is_red)
             {
@@ -264,7 +264,6 @@ int vc_flood_fill(IVC* src, IVC* dst, int x, int y, int label) {
     int* stack_y = NULL;
     int stack_ptr = 0;
 
-    // Verificação de ponteiros nulos antes de alocar memória
     if (src == NULL || dst == NULL || datasrc == NULL || datadst == NULL)
         return 0;
 
